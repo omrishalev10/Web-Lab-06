@@ -7,11 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script>
-        const url = "https://dummyjson.com/docs/products";
-        
+        const url = "https://dummyjson.com/products?limit=100";
+        const opt = {
+            mode: "cors", 
+        };            
         let currentPage = 1;
         const productsPerPage = 10;
         let data;
+        let skip = 0;
 
         const createCell = (value, isHead) => {
             return $(isHead ? '<th/>' : '<td/>').addClass("border border-blue-300 p-2 truncate text-wrap").text(value);
@@ -38,7 +41,7 @@
         }
 
         $(document).ready(function () {
-            fetch("https://dummyjson.com/products")
+            fetch(`${url}&skip=${skip}`,opt)
                 .then(response => response.json())
                 .then((responseData) => {
                     data = responseData;
@@ -48,6 +51,7 @@
             $("#prevBtn").click(() => {
                 if (currentPage > 1) {
                     currentPage--;
+                    skip -= productsPerPage;
                     updateTable();
                 }
             });
@@ -56,6 +60,7 @@
                 const totalPages = Math.ceil(data.products.length / productsPerPage);
                 if (currentPage < totalPages) {
                     currentPage++;
+                    skip += productsPerPage;
                     updateTable();
                 }
             });
